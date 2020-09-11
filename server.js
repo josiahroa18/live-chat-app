@@ -7,9 +7,9 @@ const path = require('path');
 const server = http.createServer(app)
 const io = require('socket.io')(server);
 
-
 // Middleware to serve the react client
 if(process.env.NODE_ENV == 'production'){
+    
     app.use(express.static('client/build'))
 
     app.get('*', (req, res) => {

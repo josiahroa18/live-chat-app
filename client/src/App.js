@@ -1,24 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div style={{ backgroundColor: '#f5f5f5', padding: '2px' }}>
+        <h1>Live Chat</h1>
+      </div>
+      <div style={{ height: `600px`, overflowY: 'auto', border: '1px solid black' }}>
+
+      </div>
+      <div className='tool-bar'>
+        <div style={{ width: '75%' }}>
+          <TextField
+            fullWidth
+            placeholder='Enter your message here'
+            variant="outlined"
+          />
+        </div>
+        <div style={{ width: '20%' }}>
+          <Button 
+            fullWidth 
+            variant="contained" 
+            color='primary'
+          >Send</Button>
+        </div>
+      </div>
     </div>
   );
 }
