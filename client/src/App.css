@@ -1,5 +1,5 @@
-.App {
-  width: 800px;
+.message-wrapper {
+  width: 1000px;
   margin: 0 auto;
 }
 
@@ -7,10 +7,22 @@ h1{
   text-align: center;
 }
 
+.body{
+  height: 600px;
+  display: flex;
+}
+
+.sidebar{
+  height: 100%;
+  width: 25%;
+  background-color: #f5f5f5;
+  text-align: center;
+}
+
 .tool-bar{
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 20px;
   background-color: #f5f5f5;
 }
