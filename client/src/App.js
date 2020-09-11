@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -12,25 +12,37 @@ import './App.css';
 const useStyles = makeStyles({
   root: {
     width: '600px',
-    margin: '0 auto',
+    margin: '10px auto',
     padding: '20px',
     backgroundColor: '#f5f5f5'
   },
   inputField: {
     width: '100%'
   },
-  wrapper: {
+  flexWrapper: {
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  button: {
-    margin: '20px'
+  spaceWrapper: {
+    marginTop: '20px'
+  },
+  joinButton: {
+    width: '25%',
+    marginLeft: '20px'
   }
 })
 
 function App() {
   const classes = useStyles();
   const history = useHistory();
+  
+  const [ displayName, setDisplayName ] = useState('');
+  const [ roomId, setRoomId ] = useState('');
+
+  const handleSubmit = () => {
+    console.log(displayName)
+  }
 
   return (
     <div className="App">
@@ -38,21 +50,45 @@ function App() {
         <div>
           <h1>Welcome to Live Chat!</h1>
           <Card className={classes.root}>
-            <TextField id="outlined-basic" label="Display Name" variant="outlined" className={classes.inputField}/>
-            <div className={classes.wrapper}>
+            <TextField 
+              label="Display Name *" 
+              variant="outlined" 
+              className={classes.inputField}
+              onChange={e => {
+                setDisplayName(e.target.value)
+              }}
+            />
+            <div className={`${classes.flexWrapper} ${classes.spaceWrapper}`}>
+              <TextField 
+                label="Room Id" 
+                variant="outlined" 
+                className={classes.inputField}
+                onChange={e => {
+                  setRoomId(e.target.value)
+                }}
+              />
               <Button 
                   variant="contained" 
                   color='primary'
-                  className={classes.button}
-                  onClick={() => {
-                    history.push(`/messenger?displayName=USER&roomId=myRoom`)
+                  className={classes.joinButton}
+                  onClick={async () => {
+                    await handleSubmit();
+                    history.push(`/messenger?displayName=${displayName}&roomId=${roomId}`)
                   }}
-              >Create Room</Button>
+              >Join Room</Button>
+            </div>
+            <div className={classes.flexWrapper}>
+              <p>or</p>
+            </div>
+            <div className={classes.flexWrapper}>
               <Button 
                   variant="contained" 
                   color='primary'
-                  className={classes.button}
-              >Join Room</Button>
+                  onClick={async () => {
+                    await handleSubmit();
+                    history.push(`/messenger?displayName=${displayName}&roomId=myRoom`)
+                  }}
+              >Create New Room</Button>
             </div>
           </Card>
         </div>
