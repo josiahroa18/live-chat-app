@@ -18,8 +18,17 @@ if(process.env.NODE_ENV == 'production'){
 }
 
 io.on('connection', socket => {
-    socket.on('message', message => {
-        socket.broadcast.emit('message', message);
+    console.log('User has joined the chat');
+
+    // Receive displayName and roomName from client
+    socket.on('joinRoom', ({ displayName, roomName }, callback) => {
+        console.log(displayName, roomName)
+
+        
+    })
+    
+    socket.on('disconnect', () => {
+        console.log('User has left the chat');
     })
 })
 

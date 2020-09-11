@@ -1,71 +1,56 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import queryString from 'query-string';
+import io from 'socket.io-client';
+import { useHistory, useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import '../styles.css';
 
 const useStyles = makeStyles({
-    primary: {
-        width: '20%'
-    },
-    secondary: {
-        width: '35%'
-    },
-    inputField:{
-        margin: '0 20px'
-    }
+    
 })
+
+let socket;
 
 export default () => {
     const classes = useStyles();
     const history = useHistory();
+    const location = useLocation();
+
+    const [ displayName, setDisplayName ] = useState('');
+    const [ roomName, setRoomName ] = useState('');
+
+    // Server url
+    const ENDPOINT = 'localhost:5000';
+
+    useEffect(() => {
+        // Grab the displayName and roomName from the query string
+        const { displayName, roomName } = queryString.parse(location.search);
+
+        // Set current instance
+        socket = io(ENDPOINT);
+
+        // Update component state
+        setDisplayName(displayName);
+        setRoomName(roomName);
+
+        // Emit join room
+        socket.emit('joinRoom', { displayName, roomName }, () => {
+            // Callback
+        });
+
+        // When user leaves or refreshes page, disconnect and turn off instance
+        return () => {
+            socket.emit('disconnect');
+            socket.off();
+        }
+
+    }, [location.search, ENDPOINT])
 
     return (
-        <div className='message-wrapper'>
-            <div style={{ backgroundColor: '#f5f5f5', padding: '2px' }}>
-                <h1>Live Chat</h1>
-            </div>
-            <div className='body'>
-                <div className='sidebar'>
-                <h2>Room ID</h2>
-                <div>
+        <div>
 
-                </div>
-                <h2>Users</h2>
-                <div>
-
-                </div>
-                </div>
-                <div style={{ height: `100%`, width:'75%', overflowY: 'auto', border: '1px solid black' }}>
-
-                </div>    
-            </div>
-            <div className='tool-bar'>
-                <Button 
-                    fullWidth 
-                    variant="contained" 
-                    color='secondary'
-                    className={classes.secondary}
-                    onClick={() => {
-                        history.push('/')
-                    }}
-                >Leave Room</Button>
-                <TextField
-                    fullWidth
-                    placeholder='Enter your message here'
-                    variant="outlined"
-                    className={classes.inputField}
-                />
-                <Button 
-                    fullWidth 
-                    variant="contained" 
-                    color='primary'
-                    className={classes.primary}
-                >Send</Button>
-            </div>
-        </div>
-        
+        </div>        
     );
 }
