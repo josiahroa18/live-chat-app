@@ -7,7 +7,15 @@ const path = require('path');
 
 // Middleware to serve the react client
 app.use(express.static(path.join(__dirname, 'client/build')));
-app.use(express.static('public'));
+if(process.env.NODE_ENV == 'production'){
+    app.use(express.static('client/build/index.html'))
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname = 'client/build/index.html'));
+    })
+}
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/public/index.html'));
+})
 
 io.on('connection', socket => {
     socket.on('message', message => {
