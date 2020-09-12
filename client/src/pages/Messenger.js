@@ -28,6 +28,25 @@ export default () => {
     // Server url
     const ENDPOINT = 'localhost:5000';
 
+    // When user leaves or refreshes page, disconnect and turn off instance
+    const handleDisconnect = () => {
+        socket.emit('disconnect');
+        socket.off();
+    }
+
+    // Emit a message to the server
+    const sendMessage = (e) => {
+        if(e){
+            e.preventDefault();
+        }
+
+        if(message){
+            socket.emit('sendMessage', message, () => {
+                setMessage('');
+            });
+        }
+    }
+
     useEffect(() => {
         // Grab the displayName and roomName from the query string
         const { displayName, roomName } = queryString.parse(location.search);
@@ -40,14 +59,16 @@ export default () => {
         setRoomName(roomName);
 
         // Emit join room
-        socket.emit('joinRoom', { displayName, roomName }, () => {
-            // Callback
+        socket.emit('joinRoom', { displayName, roomName }, (error) => {
+            // Callback - handle error here
+            console.log(error);
+            if(error){
+                history.push('/?error=duplicate')
+            }
         });
 
-        // When user leaves or refreshes page, disconnect and turn off instance
         return () => {
-            socket.emit('disconnect');
-            socket.off();
+            handleDisconnect();
         }
 
     }, [ location.search, ENDPOINT ]);
@@ -61,18 +82,6 @@ export default () => {
         console.log(messages);
 
     }, [ messages ])
-
-    const sendMessage = (e) => {
-        if(e){
-            e.preventDefault();
-        }
-
-        if(message){
-            socket.emit('sendMessage', message, () => {
-                setMessage('');
-            });
-        }
-    }
 
     return (
         <div>
