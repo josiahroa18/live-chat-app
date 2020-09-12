@@ -50,12 +50,12 @@ export default () => {
               }}
             />
             <TextField 
-            label='Room Name*'
-            variant='outlined'
-            className={`${classes.inputField} ${classes.spaceWrapper}`}
-            onChange={e => {
-                setRoomName(e.target.value)
-            }}
+                label='Room Name*'
+                variant='outlined'
+                className={`${classes.inputField} ${classes.spaceWrapper}`}
+                onChange={e => {
+                    setRoomName(e.target.value)
+                }}
             />
             <div className={classes.flexWrapper}>
               <Button 

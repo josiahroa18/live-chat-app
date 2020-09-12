@@ -23,6 +23,8 @@ const addUser = ({ id, displayName, roomName }) => {
     const user = { id, displayName, roomName };
 
     users.push(user);
+
+    return { user };
 }
 
 /**
@@ -38,10 +40,25 @@ const removeUser = (id) => {
     }
 }
 
-const getUser = () => {
-
+/**
+ * ==== getUser ====
+ * @param {String} id - socket id representing a user instance
+ */
+const getUser = (id) => {
+    return users.find(user => user.id === id);
 }
 
-const getUsersInRoom = () => {
+/**
+ * ==== getUsersInRoom ====
+ * @param {String} roomName 
+ */
+const getUsersInRoom = (roomName) => {
+    return users.filter(user => user.roomName === roomName);
+}
 
+module.exports = {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInRoom
 }

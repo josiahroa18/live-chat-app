@@ -8,7 +8,9 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles({
-    
+    root: {
+        width: '400px'
+    }
 })
 
 let socket;
@@ -20,6 +22,8 @@ export default () => {
 
     const [ displayName, setDisplayName ] = useState('');
     const [ roomName, setRoomName ] = useState('');
+    const [ message, setMessage ] = useState('');
+    const [ messages, setMessages ] = useState([]);
 
     // Server url
     const ENDPOINT = 'localhost:5000';
@@ -46,11 +50,48 @@ export default () => {
             socket.off();
         }
 
-    }, [location.search, ENDPOINT])
+    }, [ location.search, ENDPOINT ]);
+
+    useEffect(() => {
+        // Receives messages from server and addes it to component state
+        socket.on('message', message => {
+            setMessages([...messages, message]);
+        })
+
+        console.log(messages);
+
+    }, [ messages ])
+
+    const sendMessage = (e) => {
+        if(e){
+            e.preventDefault();
+        }
+
+        if(message){
+            socket.emit('sendMessage', message, () => {
+                setMessage('');
+            });
+        }
+    }
 
     return (
         <div>
-
+            <TextField
+                label='Message'
+                placeholder='Enter your message here'
+                variant='outlined'
+                value={message}
+                className={classes.root}
+                onChange={e => {
+                    setMessage(e.target.value);
+                }}
+                onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null}
+            />
+            <Button
+                variant='contained'
+                color='primary'
+                onClick={sendMessage}
+            >Send</Button>
         </div>        
     );
 }

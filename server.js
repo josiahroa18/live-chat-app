@@ -4,6 +4,8 @@ const PORT = process.env.PORT || 5000;
 const http = require('http');
 const path = require('path');
 
+const { addUser, removeUser, getUser, getUsersInRoom} = require('./users');
+
 const server = http.createServer(app)
 const io = require('socket.io')(server);
 
@@ -18,13 +20,32 @@ if(process.env.NODE_ENV == 'production'){
 }
 
 io.on('connection', socket => {
-    console.log('User has joined the chat');
-
     // Receive displayName and roomName from client
     socket.on('joinRoom', ({ displayName, roomName }, callback) => {
-        console.log(displayName, roomName)
+        const { error, user } = addUser({ id: socket.id, displayName, roomName });
 
-        
+        if(error) return callback(error);
+
+        // Welcomes user
+        socket
+            .emit('message', { user: 'chatBot', text: `${user.displayName}, welcome to the room ${user.roomName}` });
+
+        // Alerts everyone else of the new user
+        socket.broadcast
+            .to(user.roomName)
+            .emit('message', { user: 'chatBot', text: `${user.displayName} joined the chat!`});
+
+        socket.join(user.roomName);
+
+        callback();
+    })
+
+    socket.on('sendMessage', (message, callback) => {
+        const user = getUser(socket.id);
+
+        io.to(user.roomName).emit('message', { user: user.displayName, text: message });
+
+        callback();
     })
     
     socket.on('disconnect', () => {
