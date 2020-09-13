@@ -26,7 +26,7 @@ export default () => {
     const [ messages, setMessages ] = useState([]);
 
     // Server url
-    const ENDPOINT = 'localhost:5000';
+    const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'localhost:5000';
 
     // When user leaves or refreshes page, disconnect and turn off instance
     const handleDisconnect = () => {
@@ -61,8 +61,8 @@ export default () => {
         // Emit join room
         socket.emit('joinRoom', { displayName, roomName }, (error) => {
             // Callback - handle error here
-            console.log(error);
             if(error){
+                console.log(error);
                 history.push('/?error=duplicate')
             }
         });
