@@ -39,6 +39,8 @@ export default () => {
       }
     });
 
+    const classes = useStyles();
+
     // Error handling for duplicate display names
     useEffect(() => {
       const { error } = queryString.parse(location.search);
@@ -46,10 +48,8 @@ export default () => {
       if(error === 'duplicate'){
         setError('Display Name Taken');
       }
-      
-    }, []);
 
-    const classes = useStyles();
+    }, [ location.search ]);
 
     return (
         <div className={classes.center}>

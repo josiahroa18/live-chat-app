@@ -3,27 +3,71 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import { useHistory, useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-
-const useStyles = makeStyles({
-    root: {
-        width: '400px'
-    }
-})
+import { TextField, Button, Card } from '@material-ui/core';
+import Message from '../components/Message';
 
 let socket;
 
 export default () => {
-    const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
+    const theme = useTheme();
 
     const [ displayName, setDisplayName ] = useState('');
     const [ roomName, setRoomName ] = useState('');
     const [ message, setMessage ] = useState('');
     const [ messages, setMessages ] = useState([]);
+
+    const useStyles = makeStyles({
+        root: {
+            width: '1000px',
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
+        flexWrapper: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        center: {
+            textAlign: 'center',
+            margin: '0 auto'
+        },
+        inputField: {
+            width: '80%'
+        },
+        button: {
+            width: '15%'
+        },
+        messagesWrapper: {
+            width: '73%',
+            height: '600px',
+            border: `1px solid ${theme.palette.border.main}`,
+            borderRadius: '5px',
+            backgroundColor: theme.palette.background.secondary
+        },
+        messagesContainer: {
+            width: '100%',
+            height: '490px',
+            overflowY: 'scroll'
+        },
+        spaceWrapper: {
+            marginTop: '20px',
+            padding: '0 10px'
+        },
+        sideBar: {
+            width: '25%',
+            height: '600px',
+            backgroundColor: theme.palette.background.secondary
+        },
+        main:{
+
+        }
+    })
+
+    const classes = useStyles();
 
     // Server url
     const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'localhost:5000';
@@ -84,23 +128,42 @@ export default () => {
     }, [ messages ])
 
     return (
-        <div>
-            <TextField
-                label='Message'
-                placeholder='Enter your message here'
-                variant='outlined'
-                value={message}
-                className={classes.root}
-                onChange={e => {
-                    setMessage(e.target.value);
-                }}
-                onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null}
-            />
-            <Button
-                variant='contained'
-                color='primary'
-                onClick={sendMessage}
-            >Send</Button>
+        <div className={`${classes.root} ${classes.center}`}>
+            <Card className={classes.sideBar}>
+
+            </Card>
+            <div className={classes.messagesWrapper}>
+                <div className={`${classes.messagesContainer}`}>
+                    {messages.map(message => {
+                        return <Message 
+                                    key={`${Math.random()}-${message.user}`} 
+                                    message={message} 
+                                    currentUser={displayName.trim().toLowerCase()}
+                                />
+                    })}
+                </div>
+                {/* Message Input */}
+                <div className={`${classes.flexWrapper} ${classes.spaceWrapper}`}>
+                    <TextField
+                        label='Message'
+                        placeholder='Enter your message here'
+                        variant='outlined'
+                        value={message}
+                        className={classes.inputField}
+                        onChange={e => {
+                            setMessage(e.target.value);
+                        }}
+                        onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null}
+                    />
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={sendMessage}
+                        className={classes.button}
+                    >Send</Button>
+                </div>
+            </div>
+            
         </div>        
     );
 }
