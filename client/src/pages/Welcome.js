@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core/styles';
@@ -8,9 +9,11 @@ import { Card, TextField, Button, Typography } from '@material-ui/core';
 export default () => {
     const theme = useTheme();
     const history = useHistory();
+    const location = useLocation();
     
     const [ displayName, setDisplayName ] = useState('');
     const [ roomName, setRoomName ] = useState('');
+    const [ error, setError ] = useState('');
 
     const useStyles = makeStyles({
       root: {
@@ -34,7 +37,17 @@ export default () => {
           textAlign: 'center',
           margin: '0 auto'
       }
-    })
+    });
+
+    // Error handling for duplicate display names
+    useEffect(() => {
+      const { error } = queryString.parse(location.search);
+
+      if(error === 'duplicate'){
+        setError('Display Name Taken');
+      }
+      
+    }, []);
 
     const classes = useStyles();
 
@@ -43,11 +56,16 @@ export default () => {
           <Typography variant='h4'>Welcome to Live Chat!</Typography>
           <Card className={classes.root}>
             <TextField 
+              error={error.length > 0 ? true : false}
               label='Display Name*'
               variant='outlined'
               color='primary'
               className={classes.inputField}
+              helperText={error}
               onChange={e => {
+                if(error){
+                  setError('');
+                }
                 setDisplayName(e.target.value)
               }}
             />
