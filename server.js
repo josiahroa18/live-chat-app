@@ -28,12 +28,18 @@ io.on('connection', socket => {
 
         // Welcomes user
         socket
-            .emit('message', { user: 'chatBot', text: `${user.displayName}, welcome to the room ${user.roomName}` });
+            .emit('message', { 
+                user: 'chatBot', 
+                text: `${user.displayName}, welcome to the room ${user.roomName}` 
+            });
 
         // Alerts everyone else of the new user
         socket.broadcast
             .to(user.roomName)
-            .emit('message', { user: 'chatBot', text: `${user.displayName} joined the chat!`});
+            .emit('message', { 
+                user: 'chatBot', 
+                text: `${user.displayName} joined the chat!`
+            });
 
         socket.join(user.roomName);
 
@@ -43,7 +49,10 @@ io.on('connection', socket => {
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
 
-        io.to(user.roomName).emit('message', { user: user.displayName, text: message });
+        io.to(user.roomName).emit('message', { 
+            user: user.displayName, 
+            text: message 
+        });
 
         callback();
     })
@@ -53,9 +62,12 @@ io.on('connection', socket => {
 
         console.log('User has left')
 
-        // if(user){
-        //     io.to(user.room).emit('message')
-        // }
+        if(user){
+            io.to(user.room).emit('message', { 
+                user: 'chatBot', 
+                text: `${user.displayName} has left the room.`
+            })
+        }
     })
 })
 
