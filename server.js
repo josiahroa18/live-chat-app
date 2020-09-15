@@ -26,11 +26,13 @@ io.on('connection', socket => {
 
         if(error) return callback(error);
 
+        const nameFormatted = user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
+
         // Welcomes user
         socket
             .emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName}, welcome to the room ${user.roomName}` 
+                text: `${nameFormatted}, welcome to the room ${user.roomName}` 
             });
 
         // Alerts everyone else of the new user
@@ -38,10 +40,15 @@ io.on('connection', socket => {
             .to(user.roomName)
             .emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName} joined the chat!`
+                text: `${nameFormatted} joined the chat!`
             });
 
         socket.join(user.roomName);
+
+        io.to(user.roomName).emit('roomData', { 
+            roomName: user.roomName, 
+            users: getUsersInRoom(user.roomName)
+        });
 
         callback();
     })
@@ -49,10 +56,12 @@ io.on('connection', socket => {
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
 
+        // console.log(user.roomName)
+
         io.to(user.roomName).emit('message', { 
             user: user.displayName, 
             text: message 
-        });
+        }); 
 
         callback();
     })
@@ -60,12 +69,21 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
 
-        console.log('User has left')
-
         if(user){
-            io.to(user.room).emit('message', { 
+            const nameFormatted = user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
+
+            console.log('User has left the room')
+
+            // Send message that user has left the room
+            io.to(user.roomName).emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName} has left the room.`
+                text: `${nameFormatted} has left the room.`
+            })
+
+            // Send updated users in room
+            io.to(user.roomName).emit('roomData', {
+                roomName: user.roomName,
+                users: getUsersInRoom(user.roomName)
             })
         }
     })

@@ -39,6 +39,8 @@ export default () => {
       }
     });
 
+    const classes = useStyles();
+
     // Error handling for duplicate display names
     useEffect(() => {
       const { error } = queryString.parse(location.search);
@@ -46,10 +48,15 @@ export default () => {
       if(error === 'duplicate'){
         setError('Display Name Taken');
       }
-      
-    }, []);
 
-    const classes = useStyles();
+    }, [ location.search ]);
+
+    // Event handler for re-directing to the messenger
+    const reDirect = () => {
+      history.push(`/messenger?displayName=${displayName}&roomName=${roomName}`, { 
+        update: true 
+      })
+    }
 
     return (
         <div className={classes.center}>
@@ -68,6 +75,7 @@ export default () => {
                 }
                 setDisplayName(e.target.value)
               }}
+              onKeyPress={e => e.key === 'Enter' ? reDirect() : null}
             />
             <TextField 
                 label='Room Name*'
@@ -77,6 +85,7 @@ export default () => {
                 onChange={e => {
                     setRoomName(e.target.value)
                 }}
+                onKeyPress={e => e.key === 'Enter' ? reDirect() : null}
             />
             <div className={classes.flexWrapper}>
               <Button 
@@ -84,9 +93,7 @@ export default () => {
                   className={classes.spaceWrapper}
                   color='primary'
                   disabled={!displayName || !roomName ? true : false}
-                  onClick={() => {
-                    history.push(`/messenger?displayName=${displayName}&roomName=${roomName}`, { update: true })
-                  }}
+                  onClick={reDirect}
               >Join Room</Button>
             </div>
           </Card>

@@ -4,9 +4,15 @@ export const darkTheme = {
       primary: {
         main: '#a6d4fa'     // light blue
       },
+      secondary: {
+        main: '#c7c7c7'
+      },
       background: {
         primary: '#424242', // dark gray
         secondary: '#616161'// light gray
+      },
+      border: {
+        main: '#616161'
       }
     }
 };
@@ -16,9 +22,15 @@ export const lightTheme = {
       primary: {
         main: '#648dae'      // dark blue
       },
+      secondary: {
+        main: '#c7c7c7'
+      },
       background: {
-          primary: '#fafafa',// light gray
-          secondary: '#fff'  // white
+          primary: '#fff',
+          secondary: '#fafafa'  
+      },
+      border: {
+        main: '#c7c7c7'
       }
     }
 };
