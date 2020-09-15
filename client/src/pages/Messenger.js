@@ -17,6 +17,7 @@ export default () => {
 
     const [ displayName, setDisplayName ] = useState('');
     const [ roomName, setRoomName ] = useState('');
+    const [ users, setUsers ] = useState([]);
     const [ message, setMessage ] = useState('');
     const [ messages, setMessages ] = useState([]);
 
@@ -110,15 +111,20 @@ export default () => {
         socket.on('message', message => {
             setMessages(messages => [...messages, message]);
         })
+
+        // Receive all the users in the room
+        socket.on('roomData', ({users}) => {
+            setUsers(users);
+        });
     }, [])
 
-    useEffect(() => {
-        console.log(messages);
-    }, [messages])
+    // useEffect(() => {
+    //     console.log(messages);
+    // }, [messages])
 
     return (
         <div className={`${classes.root} ${classes.center}`}>
-            <SideBar/>
+            <SideBar roomName={roomName} users={users}/>
             <div className={classes.messagesWrapper}>
                 <Messages messages={messages}/>
 

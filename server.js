@@ -45,16 +45,23 @@ io.on('connection', socket => {
 
         socket.join(user.roomName);
 
+        io.to(user.roomName).emit('roomData', { 
+            roomName: user.roomName, 
+            users: getUsersInRoom(user.roomName)
+        });
+
         callback();
     })
 
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
 
+        // console.log(user.roomName)
+
         io.to(user.roomName).emit('message', { 
             user: user.displayName, 
             text: message 
-        });
+        }); 
 
         callback();
     })
@@ -65,9 +72,18 @@ io.on('connection', socket => {
         if(user){
             const nameFormatted = user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
 
-            io.to(user.room).emit('message', { 
+            console.log('User has left the room')
+
+            // Send message that user has left the room
+            io.to(user.roomName).emit('message', { 
                 user: 'chatBot', 
                 text: `${nameFormatted} has left the room.`
+            })
+
+            // Send updated users in room
+            io.to(user.roomName).emit('roomData', {
+                roomName: user.roomName,
+                users: getUsersInRoom(user.roomName)
             })
         }
     })
