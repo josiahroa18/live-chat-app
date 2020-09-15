@@ -3,36 +3,29 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core/styles';
 
-export default ({ message, currentUser }) => {
+import { Typography } from '@material-ui/core';
+
+export default ({ message }) => {
     const theme = useTheme();
 
     const useStyles = makeStyles({
         message: {
-            backgroundColor: currentUser === message.user ? theme.palette.primary.main : theme.palette.secondary.main,
-            maxWidth: '400px'
+            backgroundColor: theme.palette.background.secondary,
+            margin: '0',
+            '&:hover': {
+                backgroundColor: theme.palette.background.primary
+            },
+            textAlign: 'left',
+            padding: '10px 20px'
         },
-        currentUserMessage: {
-            right: '0'
-        },
-        receivingMessage: {
-            left: '0'
-        }
     })
 
     const classes = useStyles();
 
     return (
-        <>
-            {currentUser === message.user ? (
-                <div className={classes.message}>
-                    <p>{message.text} - {message.user}</p>
-                </div>  
-            ) : (
-                <div className={classes.message}>
-                    <p>{message.text} - {message.user}</p>
-                </div>  
-            )}
-        </>
-        
+        <div className={classes.message}>
+            <Typography variant='h6'>{message.user.charAt(0).toUpperCase() + message.user.slice(1)}</Typography>
+            <Typography>{message.text}</Typography>
+        </div>  
     );
 }

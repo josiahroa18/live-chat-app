@@ -26,11 +26,13 @@ io.on('connection', socket => {
 
         if(error) return callback(error);
 
+        const nameFormatted = user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
+
         // Welcomes user
         socket
             .emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName}, welcome to the room ${user.roomName}` 
+                text: `${nameFormatted}, welcome to the room ${user.roomName}` 
             });
 
         // Alerts everyone else of the new user
@@ -38,7 +40,7 @@ io.on('connection', socket => {
             .to(user.roomName)
             .emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName} joined the chat!`
+                text: `${nameFormatted} joined the chat!`
             });
 
         socket.join(user.roomName);
@@ -60,12 +62,12 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
 
-        console.log('User has left')
-
         if(user){
+            const nameFormatted = user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
+
             io.to(user.room).emit('message', { 
                 user: 'chatBot', 
-                text: `${user.displayName} has left the room.`
+                text: `${nameFormatted} has left the room.`
             })
         }
     })

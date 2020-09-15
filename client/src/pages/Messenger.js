@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import { useHistory, useLocation } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { TextField, Button, Card } from '@material-ui/core';
-import Message from '../components/Message';
+import { TextField, Button } from '@material-ui/core';
+import Messages from '../components/Messages';
+import SideBar from '../components/SideBar';
 
 let socket;
 
@@ -22,6 +22,7 @@ export default () => {
 
     const useStyles = makeStyles({
         root: {
+            marginTop: '50px !important',
             width: '1000px',
             display: 'flex',
             justifyContent: 'space-between'
@@ -48,22 +49,9 @@ export default () => {
             borderRadius: '5px',
             backgroundColor: theme.palette.background.secondary
         },
-        messagesContainer: {
-            width: '100%',
-            height: '490px',
-            overflowY: 'scroll'
-        },
         spaceWrapper: {
             marginTop: '20px',
             padding: '0 10px'
-        },
-        sideBar: {
-            width: '25%',
-            height: '600px',
-            backgroundColor: theme.palette.background.secondary
-        },
-        main:{
-
         }
     })
 
@@ -120,28 +108,20 @@ export default () => {
     useEffect(() => {
         // Receives messages from server and addes it to component state
         socket.on('message', message => {
-            setMessages([...messages, message]);
+            setMessages(messages => [...messages, message]);
         })
+    }, [])
 
+    useEffect(() => {
         console.log(messages);
-
-    }, [ messages ])
+    }, [messages])
 
     return (
         <div className={`${classes.root} ${classes.center}`}>
-            <Card className={classes.sideBar}>
-
-            </Card>
+            <SideBar/>
             <div className={classes.messagesWrapper}>
-                <div className={`${classes.messagesContainer}`}>
-                    {messages.map(message => {
-                        return <Message 
-                                    key={`${Math.random()}-${message.user}`} 
-                                    message={message} 
-                                    currentUser={displayName.trim().toLowerCase()}
-                                />
-                    })}
-                </div>
+                <Messages messages={messages}/>
+
                 {/* Message Input */}
                 <div className={`${classes.flexWrapper} ${classes.spaceWrapper}`}>
                     <TextField
